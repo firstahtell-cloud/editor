@@ -1,0 +1,1 @@
+{ "name": "editor", "productName": "Editor", "version": "0.1.0", "main": "main.js", "devDependencies": { "electron": "33.2.1", "@electron/packager": "18.3.6" } }

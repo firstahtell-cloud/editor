@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="tr"><head><meta charset="utf-8"><title>Editör 3.6</title>
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; worker-src 'self' blob:; img-src 'self' data: blob: http://127.0.0.1:*; media-src 'self' blob: http://127.0.0.1:*; style-src 'self' 'unsafe-inline'; connect-src 'self' blob: data:">
+<link rel="stylesheet" href="style.css"></head>
+<body>
+<header id="top">
+  <button id="bSave" class="primary" title="Ctrl+S">💾 Kaydet</button>
+  <input id="projName" spellcheck="false" placeholder="Proje adı">
+  <button id="bHome" title="Projeler">⌂ Projeler</button>
+  <span class="sep"></span>
+  <button id="bUndo" title="Ctrl+Z">↶</button><button id="bRedo" title="Ctrl+Y">↷</button>
+  <span class="sep"></span>
+  <button id="bText">+ Metin</button>
+  <button id="bSubs" title="Konuşmayı yazıya dök">✎ Otomatik altyazı</button>
+  <span class="sep"></span>
+  <select id="fmtSel" title="Video formatı"><option value="9:16">9:16 Dikey</option><option value="16:9">16:9 YouTube</option><option value="1:1">1:1 Kare</option><option value="4:5">4:5 Gönderi</option></select>
+  <select id="fpsSel" title="Kare hızı"><option value="24">24 fps</option><option value="30">30 fps</option><option value="60">60 fps</option></select>
+  <span class="grow"></span>
+  <span id="status"></span>
+  <button id="bExport" class="primary">Dışa Aktar</button>
+</header>
+<main>
+  <aside id="lib">
+    <div class="ph">Dolap <button id="bImport" title="Shift+A">+ Ekle</button></div>
+    <div class="lsearch"><span class="lsi">⌕</span><input id="libQ" placeholder="Dolapta ara…" spellcheck="false"><button id="libQx" title="Aramayı temizle">×</button><button id="libQgo">Ara</button></div>
+    <div id="libList"></div>
+    <div class="hint">Sürükle-bırak veya Shift+A. Çift tıkla = playhead'e ekle.</div>
+  </aside>
+  <div class="split v" data-k="lw"></div>
+  <section id="view">
+    <div id="stage"><canvas id="cv" width="1080" height="1920"></canvas></div>
+    <div id="transport">
+      <button id="bStart">⏮</button><button id="bPlay">▶</button>
+      <span id="tc">00:00.00 / 00:00.00</span>
+    </div>
+  </section>
+  <div class="split v" data-k="rw"></div>
+  <aside id="insp"><div class="ph">Özellikler</div><div id="inspBody"><div class="empty">Klip seç</div></div></aside>
+</main>
+<div class="split h" data-k="tlh"></div>
+<section id="tl">
+  <div id="tlBar"><div class="addw"><button id="bAdd" class="primary">+ Ekle</button></div><button id="bGraph" class="tbtn" title="Tab">〰 Eğri editörü</button><button id="bMagnet" class="tbtn" title="M">🧲 Mıknatıs</button><span class="hintx">K: kes · X: sil · I: keyframe · Shift+A: ekle · Space: oynat</span><span class="grow"></span><button id="bKeys" class="tbtn" title="? / F1">⌨ Kısayollar</button></div>
+  <div id="tlScroll"><div id="tlInner"><div id="ruler"></div><div id="tracks"></div><div id="playhead"><span id="phLabel">00:00.00</span></div></div></div>
+  <div id="graph" class="hidden"><div id="gSide"></div><canvas id="gCv"></canvas></div>
+  <div id="tlNav"><div id="navThumb"><div class="nh l"></div><div class="nh r"></div></div></div>
+  <datalist id="fontList"><option value="Segoe UI"><option value="Arial"><option value="Impact"><option value="Verdana"><option value="Georgia"><option value="Tahoma"><option value="Trebuchet MS"><option value="Comic Sans MS"><option value="Consolas"><option value="Times New Roman"><option value="Bahnschrift"><option value="Segoe Script"><option value="Arial Black"></datalist>
+</section>
+<div id="modal" class="hidden"><div class="box"><div id="mText"></div><div class="bar"><div id="mBar"></div></div><button id="mCancel">İptal</button></div></div>
+<div id="home">
+  <div class="hwrap">
+    <div class="hhead"><div class="htitle">Editör</div><div class="hver">Sürüm 3.6</div></div>
+    <div class="hline"></div>
+    <div class="hsub">Projeler</div>
+    <div id="projGrid"></div>
+  </div>
+  <div class="hfoot"><button id="bCreate">Oluşturmaya başla</button></div>
+</div>
+<div id="dlg" class="hidden"><div class="dbox"><div class="dtitle"></div><div class="dtext"></div><input class="dinput" spellcheck="false"><div class="dbtns"></div></div></div>
+<svg id="fxdefs" width="0" height="0" style="position:absolute"><defs></defs></svg>
+<script src="app.js"></script>
+<script src="features.js"></script>
+<script src="features2.js"></script>
+<script src="features3.js"></script>
+<script src="features4.js"></script>
+<script src="features5.js"></script>
+<script src="features6.js"></script>
+<script src="features7.js"></script>
+<script src="features8.js"></script>
+<script src="features9.js"></script>
+<script src="features10.js"></script>
+<script src="features11.js"></script>
+<script src="features12.js"></script>
+</body></html>
