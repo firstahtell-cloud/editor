@@ -310,7 +310,7 @@ function graphDraw() {
   const c = gClip(); renderGSide(c);
   if (!c || !gProps(c).length) {
     g.fillStyle = '#8a8a96'; g.font = `${13 * dpr}px Segoe UI, sans-serif`; g.textAlign = 'center'; g.textBaseline = 'middle';
-    g.fillText(c ? 'Bu klipte keyframe yok — I tuşuyla ekle' : 'Keyframe\'i olan bir klip seç', cw / 2, ch / 2); gMap = null; return;
+    g.fillText(T(c ? 'Bu klipte keyframe yok — I tuşuyla ekle' : 'Keyframe\'i olan bir klip seç'),cw / 2, ch / 2); gMap = null; return;
   }
   if (gClipId !== c.id || !gView) { gClipId = c.id; gFit(c); gSel = []; }
   const props = gProps(c).filter(p => !gHidden.has(p));

@@ -286,3 +286,30 @@ body.fsmode #bFull .fsOut{display:inline}
 .sfxEmpty{color:var(--mut);padding:30px;text-align:center}
 .sfxFoot{color:var(--mut);font-size:11px;padding:7px 12px;border-top:1px solid var(--line)}
 b.rv.pv{font-weight:400}
+/* ---- 3.8: ikon düğmeler, bilgi balonu, dil seçici ---- */
+button.icb{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-width:30px;height:28px;padding:0 7px;line-height:1;vertical-align:middle}
+button.icb svg.ic{flex:none;display:block}
+button.icb.icbl{padding:0 12px 0 9px}
+#top button.icb:not(.primary){background:transparent;border-color:transparent;color:#c9c9d4}
+#top button.icb:not(.primary):hover{background:rgba(255,255,255,.08);color:#fff}
+#top button.icb.on{background:#24324f;border-color:var(--acc);color:#fff}
+#transport button.icb{width:34px;height:30px;padding:0;background:transparent;border-color:transparent;color:#c9c9d4}
+#transport button.icb:hover{background:rgba(255,255,255,.08);color:#fff}
+#tlBar .tbtn.icb{width:30px;padding:0}
+#tlBar .hintx{display:none}
+#projGrid button.icb,#coverGrid button.icb{min-width:26px;height:26px;padding:0}
+#projGrid button.icb svg,#coverGrid button.icb svg{width:15px;height:15px}
+.sfxAdd.icb,.sfxX.icb{min-width:28px;height:26px;padding:0}
+.lye.icb{min-width:24px;height:22px;padding:0;background:transparent;border-color:transparent}
+.lye.icb svg{width:15px;height:15px}
+#tip{position:fixed;z-index:10000;pointer-events:none;max-width:280px;padding:6px 9px;border-radius:7px;background:#0b0b0e;border:1px solid #3a3a46;box-shadow:0 6px 20px rgba(0,0,0,.5);color:#e6e6ea;font-size:12px;line-height:1.35;opacity:0;transform:translateY(-2px);transition:opacity .12s,transform .12s;white-space:normal}
+#tip.on{opacity:1;transform:none}
+#tip b{font-weight:600}
+#tip kbd{margin-left:8px;padding:1px 5px;border:1px solid #3a3a46;border-radius:4px;background:#1c1c20;color:#aab;font-size:11px}
+#tip div{margin-top:3px;color:#9a9aa6}
+.hhead{display:flex;align-items:flex-start;gap:16px}
+#langSw{margin-left:auto;display:flex;align-items:center;gap:2px;padding:3px;border:1px solid var(--line);border-radius:8px;background:var(--p);color:var(--mut)}
+#langSw svg{margin:0 5px 0 4px}
+#langSw button{background:transparent;border:0;border-radius:5px;padding:4px 9px;color:var(--mut);font-weight:600;font-size:12px}
+#langSw button:hover{color:var(--tx);background:var(--p2)}
+#langSw button.on{background:var(--acc);color:#fff}

@@ -8,6 +8,14 @@ function sfxPlay(s, row) {
   a.onended = () => { if (sfxPrev && sfxPrev.a === a) sfxStop(); };
   sfxPrev = { a, s, row }; row && row.classList.add('playing');
 }
+// İngilizcede banka seslerinin adı anahtarından türetilir (b_cut_hit__air → Cut hit · air)
+function sfxName(s) {
+  if (LANG === 'tr') return s.name;
+  const m = /^b_(.+?)(?:__(.+))?$/.exec(s.key || ''); if (!m) return T(s.name);
+  const sp = x => x.replace(/_/g, ' '), cap = x => x[0].toUpperCase() + x.slice(1);
+  if (m[1] === 'fit' && m[2]) { const p = m[2].split('__'); return p[0] === 'key' && p[1] ? 'Key · ' + sp(p[1]) : cap(sp(p[p.length - 1])); } // gerçek kayıttan uyarlananlar
+  return cap(sp(m[1])) + (m[2] ? ' · ' + sp(m[2]).replace(/  /g, ' · ') : '');
+}
 const sfxNorm = t => String(t).toLocaleLowerCase('tr').replace(/[·()]/g, ' ');
 function openSfx() {
   if (typeof closeAddMenu === 'function') closeAddMenu();
@@ -34,7 +42,7 @@ function sfxRender() {
     .map(([k, n, c]) => `<button data-g="${esc(k)}" class="${k === sfxCat ? 'on' : ''}">${esc(n)}<i>${c}</i></button>`).join('');
   cats.querySelectorAll('button').forEach(b => b.onclick = () => { sfxCat = b.dataset.g; sfxRender(); });
   const words = sfxNorm(sfxQ).split(/\s+/).filter(Boolean);
-  const list = all.filter(s => (!sfxCat || s.g === sfxCat) && words.every(w => sfxNorm(s.name + ' ' + s.g).includes(w)));
+  const list = all.filter(s => (!sfxCat || s.g === sfxCat) && words.every(w => sfxNorm(s.name + ' ' + s.g + ' ' + sfxName(s) + ' ' + T(s.g)).includes(w)));
   D.querySelector('.sfxCnt').textContent = list.length + ' ses';
   const L = D.querySelector('.sfxList');
   if (!SFX_LIST.length) { L.innerHTML = '<div class="sfxEmpty">Yükleniyor…</div>'; return; }
@@ -43,7 +51,7 @@ function sfxRender() {
   for (const s of list) {
     if (!sfxCat && s.g !== lastG) { const h = document.createElement('div'); h.className = 'sfxGh'; h.textContent = s.g; L.appendChild(h); lastG = s.g; }
     const r = document.createElement('div'); r.className = 'sfxRow' + (sfxPrev && sfxPrev.s === s ? ' playing' : '');
-    r.innerHTML = `<span class="sfxPl">▶</span><span class="sfxN">${esc(s.name)}</span><span class="sfxD">${s.dur ? s.dur.toFixed(2) + ' sn' : ''}</span><button class="sfxAdd">+ Ekle</button>`;
+    r.innerHTML = `<span class="sfxPl">▶</span><span class="sfxN" data-noi18n>${esc(sfxName(s))}</span><span class="sfxD">${s.dur ? s.dur.toFixed(2) + ' sn' : ''}</span><button class="sfxAdd">+ Ekle</button>`;
     r.onclick = e => { if (e.target.closest('.sfxAdd')) return; sfxPlay(s, r); };
     r.ondblclick = () => { closeSfx(); addSfx(s); };
     r.querySelector('.sfxAdd').onclick = () => { closeSfx(); addSfx(s); };
@@ -60,7 +68,7 @@ function sfxRender() {
   let h = _m(c); if (!hasSound(c)) return h;
   const kf = hasSpdKf(c), p = +c.p.pitch || 0, ln = 1 / spd(c);
   h += `<div class="grp"><h4>Ton ve uzunluk</h4>
-    <div class="row"><label>Ton</label><input id="i_pitch" type="range" min="-12" max="12" step="1" value="${p}" data-tick="0" ${kf ? 'disabled' : ''}><b class="rv pv">${(p > 0 ? '+' : '') + p}</b></div>
+    <div class="row"><label>${T('Ton (perde)')}</label><input id="i_pitch" type="range" min="-12" max="12" step="1" value="${p}" data-tick="0" ${kf ? 'disabled' : ''}><b class="rv pv">${(p > 0 ? '+' : '') + p}</b></div>
     ${c.type === 'audio' ? `<div class="row"><label>Uzunluk</label><input id="i_len" type="range" min="0.25" max="4" step="0.05" value="${ln.toFixed(2)}" data-tick="1" ${kf ? 'disabled' : ''}><b class="rv pv">${ln.toFixed(2)}×</b></div>` : ''}
     <div class="row"><label></label><button id="i_ptreset">Sıfırla</button><span></span></div>
     <div class="hint2">${kf ? 'Hız keyframe\'i varken ton ayarı kapalı.' : 'Ton: perde (yarım ton). Uzunluk: sesi perdesini bozmadan uzatır/kısaltır.'}</div></div>`;

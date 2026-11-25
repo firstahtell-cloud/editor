@@ -1,7 +1,7 @@
 // ===================== Ek özellikler (7): ses yükseltme (%200), ses ve hız keyframe'leri =====================
 // Hız rampası: kaynak videonun aynı kısmı oynar, hızlanınca klip kısalır. Ses perdesi korunur (önizlemede WSOLA, dışa aktarmada da aynı ses).
 Object.assign(ANY_DEF, { volume: 1 });
-LABELS.speed = 'Hız'; LABELS.volume = 'Ses'; GCOL.speed = '#ff9f43'; GCOL.volume = '#2ed47a';
+LABELS.speed = 'Hız'; LABELS.volume = T('Ses düzeyi'); GCOL.speed = '#ff9f43'; GCOL.volume = '#2ed47a';
 const hasSpdKf = c => !!(c && c.kf && c.kf.speed && c.kf.speed.length);
 const spdAt = (c, lt) => clamp(+val(c, 'speed', lt) || 1, 0.05, 16);
 const srcLenOf = c => c.srcLen ?? c.dur * spd(c);

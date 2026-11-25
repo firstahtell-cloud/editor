@@ -1,12 +1,14 @@
 # Editör
 
-Windows için Electron tabanlı, kişisel kullanıma yönelik bir video editörü. Kısa dikey videolar (Shorts/Reels) ve YouTube videoları için yapıldı. Arayüz Türkçe.
+Windows için Electron tabanlı, kişisel kullanıma yönelik bir video editörü. Kısa dikey videolar (Shorts/Reels) ve YouTube videoları için yapıldı. Arayüz **İngilizce ve Türkçe** (ana ekranın sağ üstünden değiştirilir; varsayılan İngilizce).
 
-**Sürüm 3.6**
+*A personal video editor for Windows (Electron). UI in English and Turkish — switch from the top-right of the home screen.*
+
+**Sürüm 3.8**
 
 ## Kurulum (en kolay yol)
 
-1. [Releases](../../releases) sayfasından `Editor-3.6-win64.zip` dosyasını indir.
+1. [Releases](../../releases) sayfasından `Editor-3.8-win64.zip` dosyasını indir.
 2. Zip'i istediğin bir klasöre aç (ör. `Belgeler\EditorApp`).
 3. `Editor.exe`'yi çalıştır.
 
@@ -28,6 +30,7 @@ npx electron .
 
 ## Özellikler
 
+- **Arayüz:** çizgi ikonlu düğmeler, üzerine gelince açıklama ve kısayol gösteren bilgi balonları; İngilizce / Türkçe
 - **Zaman çizelgesi:** çoklu iz, kesme (K), silme (X), mıknatıs (M), geri al / yinele, otomatik kayıt ve proje yedekleri (⟲)
 - **Video:** kareler ffmpeg ile çözülür, kare doğru atlama; hız 0.25×–4× ve hız rampası, kare dondurma
 - **Keyframe'ler:** konum, ölçek, döndürme, opaklık, ses ve hız için; eğri editörü (Tab)
@@ -63,6 +66,8 @@ npx electron .
 - `main.js` — ana süreç: yerel medya sunucusu, ffmpeg ile kare çözme, ses, dışa aktarma, proje/kapak kaydı, model indirme
 - `preload.js` — `window.api` köprüsü
 - `app.js` — çekirdek: çizim, oynatma, zaman çizelgesi, kısayollar
+- `i18n.js` — dil desteği (sözlük; ekrandaki yazıları seçili dile çevirir)
+- `icons.js` — çizgi ikonlar, bilgi balonu, dil seçici
 - `features*.js` — ek özellikler (sırayla yüklenir, aynı global kapsamı paylaşır)
 - `style.css`, `index.html` — arayüz
 - `sfxpack.bin/.json` — ses efekti bankası

@@ -73,7 +73,7 @@ setInterval(() => { if (coverCtx && dirty) saveCover(true); }, 10000);
 // ---------- Araçlar ----------
 function addCoverText(i) {
   commit(); const [n, pre] = i < 0 ? ['Metin', {}] : COVER_TEXT[i];
-  const c = { id: uid(), type: 'text', name: n, start: 0, in: 0, dur: 10, p: Object.assign(baseP(), clone(TEXT_DEF), clone(pre), { text: 'YAZINI GİR' }), kf: {} };
+  const c = { id: uid(), type: 'text', name: n, start: 0, in: 0, dur: 10, p: Object.assign(baseP(), clone(TEXT_DEF), clone(pre), { text: T('YAZINI GİR') }), kf: {} };
   if (W > H) c.p.size = Math.round(c.p.size * 0.9);
   trackFor('visual', 0, 10).clips.push(c);
   if (proj.layers) proj.layers.unshift(c.id);

@@ -180,7 +180,7 @@ function srcSize(c, src) {
 }
 const fitScale = (c, sw, sh) => c.p.fit === 'cover' ? Math.max(W / sw, H / sh) : Math.min(W / sw, H / sh);
 function textLines(c) { return String(c.p.text || '').split('\n'); }
-const TEXT_DEF = { text: 'Metin', font: 'Segoe UI', size: 110, bold: true, italic: false, upper: false, align: 'center', ls: 0, lh: 1.2,
+const TEXT_DEF = { text: T('Metin'), font: 'Segoe UI', size: 110, bold: true, italic: false, upper: false, align: 'center', ls: 0, lh: 1.2,
   color: '#ffffff', grad: false, color2: '#ffcc33', stroke: '#000000', strokeW: 6,
   bg: false, bgColor: '#000000', bgOp: 0.6, bgPad: 30, bgRad: 20,
   glow: false, glowColor: '#00e5ff', glowBlur: 40, shadow: false, shColor: '#000000', shBlur: 12, shX: 8, shY: 8,
@@ -435,7 +435,7 @@ function addMediaClip(m, start, prefer) {
 }
 function addText() {
   commit();
-  const c = { id: uid(), type: 'text', name: 'Metin', start: time, in: 0, dur: 3, p: Object.assign(baseP(), JSON.parse(JSON.stringify(TEXT_DEF))), kf: {} };
+  const c = { id: uid(), type: 'text', name: T('Metin'), start: time, in: 0, dur: 3, p: Object.assign(baseP(), JSON.parse(JSON.stringify(TEXT_DEF))), kf: {} };
   trackFor('visual', c.start, c.dur).clips.push(c); sel = c.id; refreshAll();
 }
 function deleteSel() {
@@ -661,7 +661,7 @@ function refreshInsp() {
   let h = `<div class="row"><label>Ad</label><input id="i_name" spellcheck="false" value="${esc(c.name || '')}"><span></span></div>
   <div class="row"><label>Başlangıç</label><input id="i_start" type="number" step="0.01" value="${c.start.toFixed(2)}"><span></span></div>
   <div class="row"><label>Süre</label><input id="i_dur" type="number" step="0.01" value="${c.dur.toFixed(2)}"><span></span></div>`;
-  if (c.type === 'video' || c.type === 'audio') h += fieldHTML(c, ['volume', 'Ses', 'range', [0, 3]]);
+  if (c.type === 'video' || c.type === 'audio') h += fieldHTML(c, ['volume', T('Ses düzeyi'), 'range', [0, 3]]);
   if (c.type === 'video' || c.type === 'audio') h += mediaInspHTML(c);
   if (c.type === 'video' || c.type === 'image') h += visualMediaInspHTML(c);
   if (c.type === 'shape') h += shapeInspHTML(c);
@@ -818,7 +818,7 @@ function makeThumb() {
   const o = document.createElement('canvas'); o.width = W; o.height = H; renderAt(time, o.getContext('2d'));
   g.drawImage(o, 0, 0, 270, th); return c.toDataURL('image/jpeg', 0.75);
 }
-async function defaultName() { const l = await window.api.projList(); let n = l.length + 1; while (l.some(p => p.name === 'Proje ' + n)) n++; return 'Proje ' + n; }
+async function defaultName() { const l = await window.api.projList(); let n = l.length + 1; while (l.some(p => p.name === T('Proje') + ' ' + n)) n++; return T('Proje') + ' ' + n; }
 async function saveProject(name) {
   if (playing) pause();
   if (!curId) curId = uid();

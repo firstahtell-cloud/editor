@@ -51,6 +51,9 @@ function startMediaServer() {
 ipcMain.on('media:base', e => { e.returnValue = mediaBase; });
 
 const userDir = () => app.getPath('userData');
+// Dil: arayüz (renderer) seçer, burada yalnız dosya diyaloglarının yazıları için tutulur
+let LANG = 'en'; try { LANG = fs.readFileSync(path.join(userDir(), 'lang.txt'), 'utf8').trim() || 'en'; } catch { }
+const L = (tr, en) => LANG === 'tr' ? tr : en;
 const libFile = () => path.join(userDir(), 'library.json');
 const autoFile = () => path.join(userDir(), 'autosave.json');
 const modelsDir = () => process.env.EDITOR_MODELS || path.join(userDir(), 'models');
@@ -64,7 +67,7 @@ function inside(base, p) { const r = path.resolve(base, p); return r.startsWith(
 function createWindow() {
   win = new BrowserWindow({
     width: 1500, height: 900, minWidth: 800, minHeight: 550,
-    backgroundColor: '#141416', autoHideMenuBar: true, title: 'Editör 3.6',
+    backgroundColor: '#141416', autoHideMenuBar: true, title: 'Editor 3.8',
     webPreferences: { preload: path.join(__dirname, 'preload.js'), contextIsolation: true, nodeIntegration: false }
   });
   win.removeMenu();
@@ -72,7 +75,7 @@ function createWindow() {
   const LOG = path.join(app.getPath('userData'), 'editor-log.txt');
   const lg = s => { try { fs.appendFileSync(LOG, new Date().toISOString() + ' ' + s + '\n'); } catch { } };
   try { if (fs.existsSync(LOG) && fs.statSync(LOG).size > 2e6) fs.unlinkSync(LOG); } catch { }
-  lg('BAŞLADI sürüm=3.6 klasör=' + __dirname);
+  lg('BAŞLADI sürüm=3.8 dil=' + LANG + ' klasör=' + __dirname);
   win.webContents.on('console-message', (e, level, message, line, sourceId) => { if (level >= 2 || /^\[TANI\]/.test(message)) lg(`[${level}] ${message} (${String(sourceId).split('/').pop()}:${line})`); });
   win.webContents.on('preload-error', (e, p, err) => lg('PRELOAD HATA ' + err));
   win.webContents.on('render-process-gone', (e, d) => lg('RENDER ÇÖKTÜ ' + JSON.stringify(d)));
@@ -87,6 +90,7 @@ function createWindow() {
   });
 }
 
+ipcMain.handle('app:setLang', (e, l) => { if (l !== 'tr' && l !== 'en') return false; LANG = l; try { fs.writeFileSync(path.join(userDir(), 'lang.txt'), l); } catch { } return true; });
 ipcMain.handle('app:relaunch', () => { allowClose = true; app.relaunch(); app.exit(0); });
 app.whenReady().then(async () => {
   session.defaultSession.setPermissionRequestHandler((wc, perm, cb) => cb(true));
@@ -134,9 +138,9 @@ ipcMain.handle('auto:save', (e, data) => { fs.writeFileSync(autoFile(), JSON.str
 ipcMain.handle('file:exists', (e, p) => fs.existsSync(p));
 
 const EXT = { video: ['mp4', 'mov', 'mkv', 'webm', 'avi', 'm4v'], audio: ['mp3', 'wav', 'm4a', 'aac', 'ogg', 'flac'], image: ['png', 'jpg', 'jpeg', 'webp', 'gif'] };
-const NAMES = { video: 'Video', audio: 'Ses', image: 'Görsel' };
+const NAMES = { video: ['Video', 'Video'], audio: ['Ses', 'Audio'], image: ['Görsel', 'Image'] };
 ipcMain.handle('dlg:media', async (e, kind) => {
-  const filters = kind && EXT[kind] ? [{ name: NAMES[kind], extensions: EXT[kind] }] : [{ name: 'Medya', extensions: [...EXT.video, ...EXT.audio, ...EXT.image] }];
+  const filters = kind && EXT[kind] ? [{ name: L(...NAMES[kind]), extensions: EXT[kind] }] : [{ name: L('Medya', 'Media'), extensions: [...EXT.video, ...EXT.audio, ...EXT.image] }];
   const r = await dialog.showOpenDialog(win, { properties: ['openFile', 'multiSelections'], filters });
   return r.canceled ? [] : r.filePaths;
 });
@@ -436,7 +440,7 @@ ipcMain.handle('covers:load', (e, id) => readJSON(cfile(id), null));
 ipcMain.handle('covers:save', (e, d) => { d.updated = Date.now(); fs.writeFileSync(cfile(d.id), JSON.stringify(d)); return true; });
 ipcMain.handle('covers:delete', (e, id) => { try { fs.unlinkSync(cfile(id)); } catch { } return true; });
 ipcMain.handle('cover:saveJpg', async (e, { name, data }) => {
-  const r = await dialog.showSaveDialog(win, { title: 'Kapağı kaydet', defaultPath: path.join(app.getPath('pictures'), name || 'kapak.jpg'), filters: [{ name: 'JPG', extensions: ['jpg'] }] });
+  const r = await dialog.showSaveDialog(win, { title: L('Kapağı kaydet', 'Save cover'), defaultPath: path.join(app.getPath('pictures'), name || L('kapak.jpg', 'cover.jpg')), filters: [{ name: 'JPG', extensions: ['jpg'] }] });
   if (r.canceled || !r.filePath) return null; fs.writeFileSync(r.filePath, Buffer.from(data)); return r.filePath;
 });
 // ---- Arka plan kaldırma modeli (Xenova/modnet, ~7 MB, Hugging Face'ten bir kez iner) ----

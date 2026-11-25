@@ -18,6 +18,6 @@ contextBridge.exposeInMainWorld('api', {
   projBackups: id => inv('projs:backups', id), projRestore: (id, f) => inv('projs:restore', id, f),
   coverList: () => inv('covers:list'), coverLoad: id => inv('covers:load', id), coverSave: d => inv('covers:save', d), coverDelete: id => inv('covers:delete', id), coverSaveJpg: d => inv('cover:saveJpg', d),
   bgEnsure: () => inv('bg:ensure'), bgSavePng: d => inv('bg:savePng', d), onBgProgress: cb => { const h = (e, d) => cb(d); ipcRenderer.on('bg:progress', h); return () => ipcRenderer.removeListener('bg:progress', h); },
-  relaunch: () => inv('app:relaunch'), onUpdated: cb => ipcRenderer.on('app:updated', () => cb()),
+  relaunch: () => inv('app:relaunch'), setLang: l => inv('app:setLang', l), onUpdated: cb => ipcRenderer.on('app:updated', () => cb()),
   quit: () => inv('app:quit'), onCloseReq: cb => ipcRenderer.on('app:close-req', () => cb())
 });
