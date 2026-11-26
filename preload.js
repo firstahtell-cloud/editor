@@ -6,7 +6,7 @@ contextBridge.exposeInMainWorld('api', {
   autoLoad: () => inv('auto:load'), autoSave: d => inv('auto:save', d),
   exists: p => inv('file:exists', p),
   probe: p => inv('probe', p),
-  peaks: p => inv('peaks', p), vidFrame: d => inv('vid:frame', d), vidClose: k => inv('vid:close', k), vidInfo: p => inv('vid:info', p), vidStill: d => inv('vid:still', d), audPcm: p => inv('aud:pcm', p), audTmpWav: d => inv('aud:tmpwav', d), sfxList: () => inv('sfx:list'),
+  peaks: p => inv('peaks', p), vidFrame: d => inv('vid:frame', d), vidClose: k => inv('vid:close', k), vidInfo: p => inv('vid:info', p), vidStill: d => inv('vid:still', d), audPcm: p => inv('aud:pcm', p), audTmpWav: d => inv('aud:tmpwav', d), sfxList: () => inv('sfx:list'), sfxCustomList: () => inv('sfx:customList'), sfxCustomSave: l => inv('sfx:customSave', l), sfxCustomAdd: p => inv('sfx:customAdd', p), sfxCustomDel: p => inv('sfx:customDel', p),
   pickMedia: k => inv('dlg:media', k),
   expStart: c => inv('exp:start', c), expFrame: b => inv('exp:frame', b),
   expEnd: () => inv('exp:end'), expCancel: () => inv('exp:cancel'),

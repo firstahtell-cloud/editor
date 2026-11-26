@@ -3,7 +3,7 @@
 async function importPaths(paths, opt = {}) {
   const out = [], fresh = [];
   for (const p of paths) {
-    let m = library.find(x => x.path === p);
+    let m = library.find(x => x.path === p && !x.preset);
     if (m) { out.push(m); continue; }
     m = { id: uid(), path: p, name: p.split(/[\\/]/).pop(), kind: detectKind(p) };
     status('İçe aktarılıyor: ' + m.name);
@@ -28,6 +28,7 @@ async function importDialog(list) {
   const html = `${list.length > 1 ? `<div class="improw imall"><span>Hepsi için grup</span><select id="impAll">${gOpts(lastImpGroup)}</select><input id="impAllNew" class="impnew" placeholder="Yeni grup adı" style="display:none"></div>` : ''}
     <div class="implist">${list.map((m, i) => `<div class="improw" data-i="${i}">${icon(m)}
       <input class="impname" value="${esc(m.name.replace(/\.[^.]+$/, ''))}" title="${esc(m.path)}" spellcheck="false">
+      <span class="impLen"></span><button class="impEd" title="Düzenle (kes, ses, hız)">✎</button>
       <select class="impg">${gOpts(lastImpGroup)}</select><input class="impnew" placeholder="Yeni grup adı" style="display:none"></div>`).join('')}</div>
     <div class="hint2">"Sadece projeye ekle" dosyayı dolaba koymaz; doğrudan zaman çizelgesine ekler.</div>`;
   const p = dialog({ title: list.length > 1 ? `${list.length} dosya ekleniyor` : 'Dosya ekleniyor', html, wide: true,
@@ -35,6 +36,12 @@ async function importDialog(list) {
   const X = $('#dlg .dextra');
   const wire = (s, n) => { s.onchange = () => { n.style.display = s.value === '__new' ? '' : 'none'; if (s.value === '__new') n.focus(); }; };
   X.querySelectorAll('.improw[data-i]').forEach(r => wire(r.querySelector('.impg'), r.querySelector('.impnew')));
+  X.querySelectorAll('.improw[data-i]').forEach(row => { // ✎: kes / ses / hız / ton (dosyaya dokunmaz)
+    const m = list[+row.dataset.i], len = row.querySelector('.impLen');
+    const show = () => { len.textContent = m.ed ? '✂ ' + edLen(m, m.ed).toFixed(2) + ' sn' : ''; };
+    row.querySelector('.impEd').onclick = async () => { const r = await openMediaEditor(m, m.ed); if (r) { if (r.ed) m.ed = r.ed; else delete m.ed; show(); } };
+    show();
+  });
   const all = X.querySelector('#impAll');
   if (all) { const an = X.querySelector('#impAllNew'); wire(all, an); const push = () => X.querySelectorAll('.improw[data-i]').forEach(r => { const s = r.querySelector('.impg'), n = r.querySelector('.impnew'); s.value = all.value; n.value = an.value; n.style.display = all.value === '__new' ? '' : 'none'; }); all.addEventListener('change', push); an.oninput = push; }
   setTimeout(() => { const f = X.querySelector('.impname'); if (f) { f.focus(); f.select(); } }, 30);

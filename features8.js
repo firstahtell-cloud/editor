@@ -193,7 +193,7 @@ COVER_TEXT.forEach(([n, pre], i) => { const full = {}; for (const [k, v] of Obje
 }; }
 Object.assign(ANY_DEF, { msx: 1, msy: 1 });
 { const _v = visualMediaInspHTML; visualMediaInspHTML = function (c) {
-  const h = _v(c); if (c.type !== 'image') return h;
+  const h = _v(c); if (c.type !== 'image' && c.type !== 'video') return h;
   return `<div class="grp"><h4>Boyut</h4>${fieldHTML(c, ['msx', 'En', 'range', [0.1, 3]])}${fieldHTML(c, ['msy', 'Boy', 'range', [0.1, 3]])}<div class="hint2">Önizlemede kenar tutamaçlarını sürükleyerek de genişletebilirsin.</div></div>` + h;
 }; }
 

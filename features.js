@@ -601,9 +601,9 @@ function libMenu(x, y) {
   const inGroup = library.some(m => libSel.has(m.id) && m.group);
   ctxMenu(x, y, libSel.size > 1 ? `${libSel.size} öğe` : 'Dolap', [
     { icon: '▶', label: "Playhead'e ekle", act: () => { commit(); let s = time; library.filter(m => libSel.has(m.id)).forEach(m => { const c = addMediaClip(m, s); s += c.dur; }); refreshAll(); } },
-    ...(libSel.size === 1 ? [{ icon: '✎', label: 'Takma ad ver…', key: 'F2', act: () => aliasItem(library.find(m => libSel.has(m.id))) }] : []),
+    ...(libSel.size === 1 ? [{ icon: '✂', label: 'Düzenle (kes, ses, hız)…', act: () => editLibItem(library.find(m => libSel.has(m.id))) }, { icon: '✎', label: 'Takma ad ver…', key: 'F2', act: () => aliasItem(library.find(m => libSel.has(m.id))) }] : []),
     { sep: 1 },
-    { icon: '＋', label: 'Yeni gruba ekle…', act: newGroupFor },
+    { icon: '＋', label: 'Yeni gruba ekle…', key: 'Ctrl+G', act: newGroupFor },
     ...(groups.length ? [{ icon: '⧉', label: 'Gruba taşı', sub: groups.map(g => ({ icon: '▤', label: g, act: () => { library.filter(m => libSel.has(m.id)).forEach(m => m.group = g); saveLib(); } })) }] : []),
     ...(inGroup ? [{ icon: '⤴', label: 'Gruptan çıkar', act: () => { library.filter(m => libSel.has(m.id)).forEach(m => delete m.group); saveLib(); } }] : []),
     { sep: 1 },
@@ -744,8 +744,8 @@ let SFX_LIST = [];
 window.api.sfxList().then(l => { SFX_LIST = l || []; }).catch(() => {});
 async function addSfx(s) {
   const [m] = await importPaths([s.path], { quiet: true }); if (!m) return;
-  if (!m.alias) { m.alias = s.name; await window.api.libSave(library); renderLib(); }
-  commit(); addMediaClip(m, time); refreshAll(); status(s.name + ' eklendi'); setTimeout(() => status(''), 2500);
+  if (!m.alias || (s.custom && m.alias !== s.name)) { m.alias = s.name; await window.api.libSave(library); renderLib(); }
+  commit(); addMediaClip(m, time, undefined, typeof sfxEdOf === 'function' ? sfxEdOf(s) : undefined); refreshAll(); status(s.name + ' eklendi'); setTimeout(() => status(''), 2500);
 }
 
 // ---------- Kaydırıcılar: kendi çizdiğimiz çubuk (Windows'ta yerel çizim güvenilir değil) ----------

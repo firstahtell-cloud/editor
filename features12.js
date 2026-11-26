@@ -1,16 +1,20 @@
 // features12.js — Ses efekti tarayıcısı (kategori + arama + dinleme), ton ve uzunluk ayarı
-const SFX_GROUPS = ['Geçiş', 'Yükselen / Düşen', 'Vuruş / Patlama', 'Arayüz', 'Zil / Nota', 'Logo', 'Klavye / Yazma', 'Glitch', 'Nesne / Doğa', 'Klasik'];
+const SFX_GROUPS = ['Özel', 'Geçiş', 'Yükselen / Düşen', 'Vuruş / Patlama', 'Arayüz', 'Zil / Nota', 'Logo', 'Klavye / Yazma', 'Glitch', 'Nesne / Doğa', 'Klasik'];
 let sfxPrev = null, sfxCat = '', sfxQ = '';
 function sfxStop() { if (sfxPrev) { try { sfxPrev.a.pause(); } catch { } sfxPrev.row && sfxPrev.row.classList.remove('playing'); sfxPrev = null; } }
 function sfxPlay(s, row) {
   const same = sfxPrev && sfxPrev.s === s; sfxStop(); if (same) return;
-  const a = new Audio(mediaURL(s.path)); a.volume = 0.85; a.play().catch(() => { });
+  const a = new Audio(mediaURL(s.path)), e = (typeof sfxEdOf === 'function' && sfxEdOf(s)) || {};
+  a.volume = Math.min(1, 0.85 * (e.vol ?? 1)); a.playbackRate = e.speed || 1; a.preservesPitch = true; // düzenlenmiş aralığı dinlet
+  if (e.in) a.currentTime = e.in;
+  if (e.out != null) a.ontimeupdate = () => { if (a.currentTime >= e.out) { a.pause(); if (sfxPrev && sfxPrev.a === a) sfxStop(); } };
+  a.play().catch(() => { });
   a.onended = () => { if (sfxPrev && sfxPrev.a === a) sfxStop(); };
   sfxPrev = { a, s, row }; row && row.classList.add('playing');
 }
 // İngilizcede banka seslerinin adı anahtarından türetilir (b_cut_hit__air → Cut hit · air)
 function sfxName(s) {
-  if (LANG === 'tr') return s.name;
+  if (LANG === 'tr' || s.custom) return s.name;
   const m = /^b_(.+?)(?:__(.+))?$/.exec(s.key || ''); if (!m) return T(s.name);
   const sp = x => x.replace(/_/g, ' '), cap = x => x[0].toUpperCase() + x.slice(1);
   if (m[1] === 'fit' && m[2]) { const p = m[2].split('__'); return p[0] === 'key' && p[1] ? 'Key · ' + sp(p[1]) : cap(sp(p[p.length - 1])); } // gerçek kayıttan uyarlananlar
@@ -36,24 +40,32 @@ function openSfx() {
 function closeSfx() { sfxStop(); const D = $('#sfxDlg'); if (D) D.classList.add('hidden'); }
 function sfxRender() {
   const D = $('#sfxDlg'); if (!D) return;
-  const all = SFX_LIST.map(s => Object.assign(s, { g: s.g || 'Klasik' }));
+  const all = [...(typeof SFX_CUSTOM !== 'undefined' ? SFX_CUSTOM : []), ...SFX_LIST.map(s => Object.assign(s, { g: s.g || 'Klasik' }))];
   const cats = D.querySelector('.sfxCats');
-  cats.innerHTML = [['', 'Tümü', all.length], ...SFX_GROUPS.map(g => [g, g, all.filter(s => s.g === g).length]).filter(x => x[2])]
+  cats.innerHTML = [['', 'Tümü', all.length], ...SFX_GROUPS.map(g => [g, g, all.filter(s => s.g === g).length]).filter(x => x[2] || x[0] === 'Özel')]
     .map(([k, n, c]) => `<button data-g="${esc(k)}" class="${k === sfxCat ? 'on' : ''}">${esc(n)}<i>${c}</i></button>`).join('');
   cats.querySelectorAll('button').forEach(b => b.onclick = () => { sfxCat = b.dataset.g; sfxRender(); });
   const words = sfxNorm(sfxQ).split(/\s+/).filter(Boolean);
   const list = all.filter(s => (!sfxCat || s.g === sfxCat) && words.every(w => sfxNorm(s.name + ' ' + s.g + ' ' + sfxName(s) + ' ' + T(s.g)).includes(w)));
   D.querySelector('.sfxCnt').textContent = list.length + ' ses';
   const L = D.querySelector('.sfxList');
-  if (!SFX_LIST.length) { L.innerHTML = '<div class="sfxEmpty">Yükleniyor…</div>'; return; }
-  L.innerHTML = list.length ? '' : '<div class="sfxEmpty">Sonuç yok</div>';
+  if (!SFX_LIST.length && sfxCat !== 'Özel') { L.innerHTML = '<div class="sfxEmpty">Yükleniyor…</div>'; return; }
+  L.innerHTML = list.length ? '' : (sfxCat === 'Özel' && !sfxQ ? '' : '<div class="sfxEmpty">Sonuç yok</div>');
+  if (sfxCat === 'Özel') { // kendi ses efektlerin
+    const h = document.createElement('div'); h.className = 'sfxOzel';
+    h.innerHTML = `<button class="primary" id="sfxAddCustom">+ Ses ekle</button><span>Kendi ses dosyalarını ekle. Editör'ün içine kopyalanır; ✎ ile nereden başlayıp biteceğini, sesini, hızını ve tonunu ayarlayabilirsin.</span>`;
+    h.querySelector('#sfxAddCustom').onclick = addCustomSfx; L.appendChild(h);
+  }
   let lastG = null;
   for (const s of list) {
     if (!sfxCat && s.g !== lastG) { const h = document.createElement('div'); h.className = 'sfxGh'; h.textContent = s.g; L.appendChild(h); lastG = s.g; }
     const r = document.createElement('div'); r.className = 'sfxRow' + (sfxPrev && sfxPrev.s === s ? ' playing' : '');
-    r.innerHTML = `<span class="sfxPl">▶</span><span class="sfxN" data-noi18n>${esc(sfxName(s))}</span><span class="sfxD">${s.dur ? s.dur.toFixed(2) + ' sn' : ''}</span><button class="sfxAdd">+ Ekle</button>`;
-    r.onclick = e => { if (e.target.closest('.sfxAdd')) return; sfxPlay(s, r); };
-    r.ondblclick = () => { closeSfx(); addSfx(s); };
+    const se = typeof sfxEdOf === 'function' ? sfxEdOf(s) : null, dd = se && s.dur ? edLen({ kind: 'audio', dur: s.dur }, se) : s.dur;
+    r.innerHTML = `<span class="sfxPl">▶</span><span class="sfxN" data-noi18n>${esc(sfxName(s))}</span><span class="sfxD${se ? ' ed' : ''}">${se ? '✂ ' : ''}${dd ? dd.toFixed(2) + ' sn' : ''}</span>${s.custom ? '<button class="sfxDel" title="Sil">×</button>' : ''}<button class="sfxEd" title="Düzenle (kes, ses, hız, ton)">✎</button><button class="sfxAdd">+ Ekle</button>`;
+    r.onclick = e => { if (e.target.closest('.sfxAdd,.sfxEd,.sfxDel')) return; sfxPlay(s, r); };
+    r.querySelector('.sfxEd').onclick = e => { e.stopPropagation(); editSfx(s); };
+    if (s.custom) r.querySelector('.sfxDel').onclick = e => { e.stopPropagation(); delCustomSfx(s); };
+    r.ondblclick = e => { if (e.target.closest('button')) return; closeSfx(); addSfx(s); };
     r.querySelector('.sfxAdd').onclick = () => { closeSfx(); addSfx(s); };
     if (sfxPrev && sfxPrev.s === s) sfxPrev.row = r;
     L.appendChild(r);

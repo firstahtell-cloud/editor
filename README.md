@@ -4,11 +4,11 @@ Windows için Electron tabanlı, kişisel kullanıma yönelik bir video editör�
 
 *A personal video editor for Windows (Electron). UI in English and Turkish — switch from the top-right of the home screen.*
 
-**Sürüm 3.8**
+**Sürüm 4.0**
 
 ## Kurulum (en kolay yol)
 
-1. [Releases](../../releases) sayfasından `Editor-3.8-win64.zip` dosyasını indir.
+1. [Releases](../../releases) sayfasından `Editor-4.0-win64.zip` dosyasını indir.
 2. Zip'i istediğin bir klasöre aç (ör. `Belgeler\EditorApp`).
 3. `Editor.exe`'yi çalıştır.
 
@@ -30,12 +30,15 @@ npx electron .
 
 ## Özellikler
 
+- **Medya düzenleyici:** dosyayı eklerken, dolapta (sağ tık) veya ses efektlerinde ✎ ile baştan/sondan kesme, ses düzeyi, hız ve ton; dosyanın kendisi değişmez
+- **Özel ses efektleri:** kendi seslerini "Özel" sekmesine ekle
+- **Dolap:** Ctrl+G ile gruplama; zaman çizelgesindeki klibi sağ tık → "Dolaba ekle (ayarlarıyla)"
 - **Arayüz:** çizgi ikonlu düğmeler, üzerine gelince açıklama ve kısayol gösteren bilgi balonları; İngilizce / Türkçe
 - **Zaman çizelgesi:** çoklu iz, kesme (K), silme (X), mıknatıs (M), geri al / yinele, otomatik kayıt ve proje yedekleri (⟲)
 - **Video:** kareler ffmpeg ile çözülür, kare doğru atlama; hız 0.25×–4× ve hız rampası, kare dondurma
 - **Keyframe'ler:** konum, ölçek, döndürme, opaklık, ses ve hız için; eğri editörü (Tab)
 - **Metin ve altyazı:** Whisper ile otomatik altyazı (çevrimdışı), kelime zamanlamalı ve karaoke altyazı
-- **Görüntü:** efektler, yeşil ekran (damlalıkla renk seçimi), kırpma (C), ayna, arka plan bulanıklığı, netlik bloğu, Katmanlar paneli
+- **Görüntü:** efektler (video, görsel, metin ve şekillerde), videoyu/görseli en-boy ayrı esnetme, yeşil ekran (damlalıkla renk seçimi), kırpma (C), ayna, arka plan bulanıklığı, netlik bloğu, Katmanlar paneli
 - **Ses:** %300'e kadar ses, ton değiştirme (±12 yarım ton), perdeyi koruyarak uzatma, sessizlik kesme, 250+ ses efekti tarayıcısı
 - **Kapak tasarımcısı:** Shorts 1080×1920 ve YouTube 1280×720, hazır metin stilleri, arka plan silme (MODNet), ≤2 MB JPG dışa aktarma
 - **Dışa aktarma:** 9:16, 16:9, 1:1, 4:5; 24/30/60 fps; MP4 (ffmpeg)
@@ -68,6 +71,7 @@ npx electron .
 - `app.js` — çekirdek: çizim, oynatma, zaman çizelgesi, kısayollar
 - `i18n.js` — dil desteği (sözlük; ekrandaki yazıları seçili dile çevirir)
 - `icons.js` — çizgi ikonlar, bilgi balonu, dil seçici
+- `features13.js` — medya düzenleyici, özel ses efektleri, dolap düzenleme
 - `features*.js` — ek özellikler (sırayla yüklenir, aynı global kapsamı paylaşır)
 - `style.css`, `index.html` — arayüz
 - `sfxpack.bin/.json` — ses efekti bankası

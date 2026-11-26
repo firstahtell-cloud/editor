@@ -67,7 +67,7 @@ function inside(base, p) { const r = path.resolve(base, p); return r.startsWith(
 function createWindow() {
   win = new BrowserWindow({
     width: 1500, height: 900, minWidth: 800, minHeight: 550,
-    backgroundColor: '#141416', autoHideMenuBar: true, title: 'Editor 3.8',
+    backgroundColor: '#141416', autoHideMenuBar: true, title: 'Editor 4.0',
     webPreferences: { preload: path.join(__dirname, 'preload.js'), contextIsolation: true, nodeIntegration: false }
   });
   win.removeMenu();
@@ -75,7 +75,7 @@ function createWindow() {
   const LOG = path.join(app.getPath('userData'), 'editor-log.txt');
   const lg = s => { try { fs.appendFileSync(LOG, new Date().toISOString() + ' ' + s + '\n'); } catch { } };
   try { if (fs.existsSync(LOG) && fs.statSync(LOG).size > 2e6) fs.unlinkSync(LOG); } catch { }
-  lg('BAŞLADI sürüm=3.8 dil=' + LANG + ' klasör=' + __dirname);
+  lg('BAŞLADI sürüm=4.0 dil=' + LANG + ' klasör=' + __dirname);
   win.webContents.on('console-message', (e, level, message, line, sourceId) => { if (level >= 2 || /^\[TANI\]/.test(message)) lg(`[${level}] ${message} (${String(sourceId).split('/').pop()}:${line})`); });
   win.webContents.on('preload-error', (e, p, err) => lg('PRELOAD HATA ' + err));
   win.webContents.on('render-process-gone', (e, d) => lg('RENDER ÇÖKTÜ ' + JSON.stringify(d)));
@@ -409,6 +409,12 @@ function ensureSfx(dir) {
 }
 // ---- SFX_SON ----
 ipcMain.handle('sfx:list', () => ensureSfx(path.join(userDir(), 'sfx')));
+// ---- Özel ses efektleri: kullanıcının dosyaları sfx\ozel içine kopyalanır (asıl dosya taşınsa da kaybolmaz) ----
+const ozelDir = () => { const d = path.join(userDir(), 'sfx', 'ozel'); fs.mkdirSync(d, { recursive: true }); return d; };
+ipcMain.handle('sfx:customList', () => (readJSON(path.join(ozelDir(), 'list.json'), []) || []).filter(s => s && s.path && fs.existsSync(s.path)));
+ipcMain.handle('sfx:customSave', (e, list) => { fs.writeFileSync(path.join(ozelDir(), 'list.json'), JSON.stringify(Array.isArray(list) ? list : [])); return true; });
+ipcMain.handle('sfx:customAdd', (e, p) => { if (!p || !fs.existsSync(p)) return null; const dst = path.join(ozelDir(), Date.now().toString(36) + Math.random().toString(36).slice(2, 5) + '_' + path.basename(p).replace(/[<>:"\/\\|?*]/g, '_')); fs.copyFileSync(p, dst); return dst; });
+ipcMain.handle('sfx:customDel', (e, p) => { try { const d = path.resolve(ozelDir()); if (path.dirname(path.resolve(String(p))) === d) fs.unlinkSync(p); } catch { } return true; });
 
 // ---- Projeler ----
 const projDir = () => { const d = path.join(userDir(), 'projects'); fs.mkdirSync(d, { recursive: true }); return d; };

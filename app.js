@@ -275,7 +275,7 @@ function boxOf(c, t) {
   const src = elFor(c); if (!src) return null;
   const [sw, sh] = srcSize(c, src); if (!sw) return null;
   const f = fitScale(c, sw, sh);
-  const mx = c.type === 'image' ? (c.p.msx ?? 1) : 1, my = c.type === 'image' ? (c.p.msy ?? 1) : 1;
+  const st = c.type === 'image' || c.type === 'video', mx = st ? (c.p.msx ?? 1) : 1, my = st ? (c.p.msy ?? 1) : 1;
   const cr = c.p.crop; return { g, w: sw * f * g.s * mx * (cr ? 1 - cr.l - cr.r : 1), h: sh * f * g.s * my * (cr ? 1 - cr.t - cr.b : 1) };
 }
 let VIEW = { s: 0.3, ox: 0, oy: 0 };
@@ -300,14 +300,15 @@ function renderAt(t, c2 = ctx, preview = false, k = 1) {
     if (src && ss[0] && c.p.bgBlur) { c2.save(); c2.globalAlpha = alpha; drawBlurBg(c2, src, ss[0], ss[1], colorFilter(c)); c2.restore(); }
     c2.save(); c2.globalAlpha = alpha;
     if (T.wipe) { c2.beginPath(); c2.rect(T.wipe[0], T.wipe[1], T.wipe[2], T.wipe[3]); c2.clip(); }
-    const flt = ((src ? colorFilter(c) : '') + (T.blur > 0.3 ? ` blur(${(T.blur * ks).toFixed(1)}px)` : '') + (src && typeof fxBlurF === 'function' ? fxBlurF(c, ks) : '')).trim();
+    const fxOk = src || c.type === 'text' || c.type === 'shape'; // metin ve şekillerde de renk ayarı/efekt
+    const flt = ((fxOk ? colorFilter(c) : '') + (T.blur > 0.3 ? ` blur(${(T.blur * ks).toFixed(1)}px)` : '') + (fxOk && typeof fxBlurF === 'function' ? fxBlurF(c, ks) : '')).trim();
     if (flt) c2.filter = flt;
     c2.translate(W / 2 + g.x + T.dx, H / 2 + g.y + T.dy); c2.rotate((g.r + T.dr) * Math.PI / 180); c2.scale(g.s * T.ds * (T.flip || 1), g.s * T.ds);
-    if (c.type === 'text') { const sx = c.p.sx ?? 1; if (sx !== 1) c2.scale(sx, 1); drawText(c2, c, lt); }
-    else if (c.type === 'shape') drawShape(c2, c);
+    if (c.type === 'text') { const sx = c.p.sx ?? 1; if (sx !== 1) c2.scale(sx, 1); if (!(typeof fxRaster === 'function' && fxRaster(c2, c, lt, t, ks * g.s * T.ds * sx))) drawText(c2, c, lt); }
+    else if (c.type === 'shape') { if (!(typeof fxRaster === 'function' && fxRaster(c2, c, lt, t, ks * g.s * T.ds))) drawShape(c2, c); }
     else if (src && ss[0]) {
       if (c.p.mirror) c2.scale(-1, 1); // ters görsel (yatay ayna)
-      if (c.type === 'image') { const mx = c.p.msx ?? 1, my = c.p.msy ?? 1; if (mx !== 1 || my !== 1) c2.scale(mx, my); } // görseli en/boy ayrı genişlet
+      if (c.type === 'image' || c.type === 'video') { const mx = c.p.msx ?? 1, my = c.p.msy ?? 1; if (mx !== 1 || my !== 1) c2.scale(mx, my); } // görseli/videoyu en/boy ayrı genişlet
       const f = fitScale(c, ss[0], ss[1]), dw = ss[0] * f, dh = ss[1] * f;
       if ((c.p.crop || (typeof cropEdit !== 'undefined' && cropEdit && cropEdit.id === c.id)) && typeof cropPre === 'function') cropPre(c2, c, dw, dh); // kırpma
       try { if (typeof drawMediaFx === 'function') drawMediaFx(c2, c, src, dw, dh, t, ks * g.s * T.ds); else c2.drawImage(src, -dw / 2, -dh / 2, dw, dh); } catch { }
@@ -427,10 +428,11 @@ function trackFor(kind, start, dur, prefer) {
   return t;
 }
 const baseP = () => ({ x: 0, y: 0, scale: 1, rotation: 0, opacity: 1 });
-function addMediaClip(m, start, prefer) {
+function addMediaClip(m, start, prefer, ed) {
   proj.media[m.id] = { id: m.id, path: m.path, name: m.name, alias: m.alias, kind: m.kind, dur: m.dur, hasAudio: m.hasAudio };
   const c = { id: uid(), type: m.kind, mediaId: m.id, name: m.alias || m.name, start, in: 0, dur: m.dur, p: baseP(), kf: {} };
   if (m.kind !== 'image') c.p.volume = 1;
+  if (typeof applyLibEdits === 'function') applyLibEdits(c, m, ed); // dolaptaki düzenleme ayarları
   trackFor(kindOf(c), start, c.dur, prefer).clips.push(c); sel = c.id; return c;
 }
 function addText() {
@@ -667,6 +669,7 @@ function refreshInsp() {
   if (c.type === 'shape') h += shapeInspHTML(c);
   if (c.type === 'focus' && typeof focusInspHTML === 'function') h += focusInspHTML(c);
   if (c.type === 'text') h += textInspHTML(c);
+  if ((c.type === 'text' || c.type === 'shape') && typeof fxGrpHTML === 'function') h += fxGrpHTML(c);
   if (kindOf(c) === 'visual') h += `<div class="grp"><h4>Geçişler</h4>${fieldHTML(c, ['trIn', 'Giriş', 'sel', TRANSITIONS])}${fieldHTML(c, ['trInD', 'Giriş süresi', 'num', 0.1])}${fieldHTML(c, ['trOut', 'Çıkış', 'sel', TRANSITIONS])}${fieldHTML(c, ['trOutD', 'Çıkış süresi', 'num', 0.1])}</div>`;
   if (kindOf(c) === 'visual') h += `<div class="grp"><h4>Belirme / Kaybolma</h4>${fieldHTML(c, ['fadeIn', 'Belirme (sn)', 'num', 0.1])}${fieldHTML(c, ['fadeOut', 'Kaybolma (sn)', 'num', 0.1])}</div>`;
   if (kindOf(c) === 'visual') {

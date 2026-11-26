@@ -12,7 +12,7 @@ function cropPre(c2, c, dw, dh) {
 function cropGeo(c) { // seçili klibin dünya → yerel dönüşümü için gerekenler
   const src = elFor(c); if (!src) return null; const [sw, sh] = srcSize(c, src); if (!sw) return null;
   const f = fitScale(c, sw, sh), dw = sw * f, dh = sh * f, g = geomOf(evalClip ? evalClip(c, time - c.start) : c, time);
-  const mx = c.type === 'image' ? (c.p.msx ?? 1) : 1, my = c.type === 'image' ? (c.p.msy ?? 1) : 1, cr = c.p.crop || CROP0();
+  const st = c.type === 'image' || c.type === 'video', mx = st ? (c.p.msx ?? 1) : 1, my = st ? (c.p.msy ?? 1) : 1, cr = c.p.crop || CROP0();
   return { g, dw, dh, mx, my, ox: (cr.l - cr.r) * dw / 2, oy: (cr.t - cr.b) * dh / 2 };
 }
 function cropToFrac(G, px, py) { // dünya noktası → tam görsel üzerinde 0..1 kesir

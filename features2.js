@@ -170,7 +170,7 @@ async function freezeFrame(c) {
 }
 
 // ---------- 4) Döndürme tutamacı, kenar tutamaçları ----------
-const sideModes = c => c.type === 'text' ? ['l', 'r'] : (c.type === 'shape' || c.type === 'focus' || c.type === 'image') ? ['l', 'r', 't', 'b'] : [];
+const sideModes = c => c.type === 'text' ? ['l', 'r'] : (c.type === 'shape' || c.type === 'focus' || c.type === 'image' || c.type === 'video') ? ['l', 'r', 't', 'b'] : [];
 const SIDE = { l: [-1, 0], r: [1, 0], t: [0, -1], b: [0, 1] };
 const ROT_L = () => 46 / VIEW.s;
 function drawHandles2(g, b, c) {
@@ -215,7 +215,7 @@ function handleDown2(e) {
       const P = TP(cs), xs = cs.p.sx ?? 1, pd = P.bg ? P.bgPad : 0;
       cs.p.boxW = Math.round(Math.max(P.size * 0.8, 2 * Math.abs(lx) / (g.s * xs) - 2 * pd));
       status(`Kutu genişliği: ${cs.p.boxW}px (alanda: 0 = otomatik)`);
-    } else if (cs.type === 'image') { // görsel: en/boy ayrı (oran bozulabilir)
+    } else if (cs.type === 'image' || cs.type === 'video') { // görsel/video: en/boy ayrı (oran bozulabilir)
       if (sx) cs.p.msx = Math.round(clamp(2 * Math.abs(lx) / bw0, 0.05, 10) * 1000) / 1000; else cs.p.msy = Math.round(clamp(2 * Math.abs(ly) / bh0, 0.05, 10) * 1000) / 1000;
       status(`En ${Math.round((cs.p.msx ?? 1) * 100)}% · Boy ${Math.round((cs.p.msy ?? 1) * 100)}%`);
     } else if (sx) cs.p.w = Math.max(10, Math.round(2 * Math.abs(lx) / g.s));

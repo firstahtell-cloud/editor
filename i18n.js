@@ -147,8 +147,16 @@ const I18N_EN = {
   'Medya': 'Media', 'İndirme hatası': 'Download error', 'Model doğrulanamadı (bozuk indirme)': 'Model could not be verified (corrupt download)', 'Model açılıyor…': 'Unpacking model…',
   'Model dosyaları eksik': 'Model files are missing', 'Seste konuşma yok': 'No speech in audio', 'Model hazır': 'Model ready', 'Model indiriliyor…': 'Downloading model…', 'Model indirilemedi': 'Model could not be downloaded',
   'Hata': 'Error',
+  // ---- 3.9: medya düzenleyici, özel ses efektleri, dolap ----
+  'Düzenle': 'Edit', 'Süre (sn)': 'Duration (s)', 'Dinle / durdur (Boşluk)': 'Listen / stop (Space)', 'Bitiş': 'End',
+  'Kenar tutamaçlarını sürükleyerek nereden başlayıp nerede biteceğini seç. Dosyanın kendisi değişmez.': 'Drag the edge handles to choose where it starts and ends. The file itself is not changed.',
+  'Özel': 'Custom', 'Ses ekle': 'Add sound', 'Ses efektini düzenle': 'Edit sound effect', 'Düzenle (kes, ses, hız, ton)': 'Edit (trim, volume, speed, pitch)', 'Düzenle (kes, ses, hız)': 'Edit (trim, volume, speed)',
+  'Düzenle (kes, ses, hız)…': 'Edit (trim, volume, speed)…', 'Ses efekti silinsin mi?': 'Delete sound effect?', 'Dolaptaki öğeyi düzenle': 'Edit library item',
+  'Kendi ses dosyalarını ekle. Editör\'ün içine kopyalanır; ✎ ile nereden başlayıp biteceğini, sesini, hızını ve tonunu ayarlayabilirsin.': 'Add your own sound files. They are copied into the Editor; use ✎ to set where they start and end, their volume, speed and pitch.',
+  'Ayarlarıyla eklenmiş klip': 'Clip saved with its settings', 'Düzenlenmiş': 'Edited', 'Dolaba ekle (ayarlarıyla)': 'Add to library (with settings)', 'Dolaba eklendi': 'Added to library',
+  '"Sadece projeye ekle" dosyayı dolaba koymaz; doğrudan zaman çizelgesine ekler.': '"Add to project only" does not put the file in the library; it goes straight to the timeline.',
   // ---- Ana ekran ----
-  'Sürüm': 'Version', 'Sürüm 3.8': 'Version 3.8', 'Yeni proje': 'New project'
+  'Sürüm': 'Version', 'Sürüm 4.0': 'Version 4.0', 'Yeni proje': 'New project'
 };
 // Değişken içeren yazılar: {} = herhangi bir parça (sırasıyla aktarılır)
 const I18N_PAT = [
@@ -238,5 +246,5 @@ function setLang(l) {
   try { window.api && window.api.setLang && window.api.setLang(l); } catch { }
   location.reload();
 }
-document.title = LANG === 'tr' ? 'Editör 3.8' : 'Editor 3.8';
+document.title = LANG === 'tr' ? 'Editör 4.0' : 'Editor 4.0';
 try { window.api && window.api.setLang && window.api.setLang(LANG); } catch { } // ana süreç (dosya diyalogları) aynı dili kullansın
